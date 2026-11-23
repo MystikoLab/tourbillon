@@ -53,7 +53,10 @@ impl<'a> WeightedIndex<'a> {
 }
 
 fn compare(query: &str, content: &str) -> i32 {
-    let query_chars = query.chars().collect::<Vec<char>>();
+    let query_chars = query
+        .chars()
+        .flat_map(char::to_lowercase)
+        .collect::<Vec<char>>();
     let mut chars_in_query_found = 0;
     let mut current_index = 0;
 

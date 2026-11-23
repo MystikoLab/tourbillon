@@ -1,4 +1,6 @@
-use objc2::{AnyThread, MainThreadMarker};
+use std::ptr;
+
+use objc2::{AnyThread, MainThreadMarker, msg_send, runtime::AnyObject};
 use objc2_app_kit::NSApplication;
 use objc2_foundation::{NSAppleScript, NSString};
 
@@ -86,18 +88,18 @@ fn eject_all_disks() {
 fn system_events_osascript(action: &str) {
     let src = NSString::from_str(&format!("tell application \"System Events\" to {}", action));
     let script = NSAppleScript::initWithSource(NSAppleScript::alloc(), &src).unwrap();
-    let mut err = None;
     unsafe {
-        script.executeAndReturnError(Some(&mut err));
+        let _: *mut AnyObject =
+            msg_send![&script, executeAndReturnError: ptr::null_mut::<*mut AnyObject>()];
     }
 }
 
 fn finder_events_osascript(action: &str) {
     let src = NSString::from_str(&format!("tell application \"Finder\" to {}", action));
     let script = NSAppleScript::initWithSource(NSAppleScript::alloc(), &src).unwrap();
-    let mut err = None;
     unsafe {
-        script.executeAndReturnError(Some(&mut err));
+        let _: *mut AnyObject =
+            msg_send![&script, executeAndReturnError: ptr::null_mut::<*mut AnyObject>()];
     }
 }
 

@@ -77,9 +77,9 @@ impl<'a> Engine<'a> {
         let action = self.queried_results.get(index).ok_or(())?;
         action.call_action();
         self.ranking
-            .entry(action.index_for_action().name.to_string())
+            .entry(action.index_for_action().name.to_lowercase())
             .and_modify(|x| *x += 1)
-            .or_insert(0);
+            .or_insert(1);
 
         Ok(())
     }
