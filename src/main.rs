@@ -27,7 +27,7 @@ fn main() {
         .collect();
 
     let mut engine = Engine::new(actions);
-    engine.query_actions("aari");
+    engine.query_actions("emptytrash");
 
     let actions: Vec<&str> = engine
         .queried_results
@@ -35,6 +35,8 @@ fn main() {
         .iter()
         .map(|x| x.index_for_action().name)
         .collect();
+
+    engine.open_action(0);
 
     dbg!(actions);
 }

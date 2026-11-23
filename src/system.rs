@@ -8,6 +8,10 @@ pub enum SystemAction {
     QuitSelf,
     Sleep,
     Shutdown,
+    Restart,
+    Logout,
+    EmptyTrash,
+    EjectAllDisks,
 }
 
 impl SystemAction {
@@ -16,6 +20,10 @@ impl SystemAction {
             SystemAction::QuitSelf => quit_self(),
             SystemAction::Shutdown => shutdown(),
             SystemAction::Sleep => sleep(),
+            SystemAction::Restart => restart(),
+            SystemAction::Logout => logout(),
+            SystemAction::EmptyTrash => empty_trash(),
+            SystemAction::EjectAllDisks => eject_all_disks(),
         }
     }
 
@@ -24,6 +32,10 @@ impl SystemAction {
             SystemAction::QuitSelf => "quit",
             SystemAction::Sleep => "sleep",
             SystemAction::Shutdown => "shutdown",
+            SystemAction::Restart => "restart",
+            SystemAction::Logout => "logout",
+            SystemAction::EmptyTrash => "emptytrash",
+            SystemAction::EjectAllDisks => "ejectalldisks",
         }
     }
     pub fn index() -> Vec<SystemAction> {
@@ -31,6 +43,10 @@ impl SystemAction {
             SystemAction::Sleep,
             SystemAction::QuitSelf,
             SystemAction::Shutdown,
+            SystemAction::Restart,
+            SystemAction::Logout,
+            SystemAction::EmptyTrash,
+            SystemAction::EjectAllDisks,
         ]
     }
 }
@@ -44,7 +60,31 @@ fn quit_self() {
 }
 
 fn sleep() {
-    let src = NSString::from_str(r#"tell application "System Events" to sleep"#);
+    system_events_osascript("sleep");
+}
+
+fn shutdown() {
+    system_events_osascript("shut down");
+}
+
+fn restart() {
+    system_events_osascript("restart");
+}
+
+fn logout() {
+    system_events_osascript("log out");
+}
+
+fn empty_trash() {
+    finder_events_osascript("empty trash");
+}
+
+fn eject_all_disks() {
+    finder_events_osascript("eject (every disk whose ejectable is true)");
+}
+
+fn system_events_osascript(action: &str) {
+    let src = NSString::from_str(&format!("tell application \"System Events\" to {}", action));
     let script = NSAppleScript::initWithSource(NSAppleScript::alloc(), &src).unwrap();
     let mut err = None;
     unsafe {
@@ -52,8 +92,8 @@ fn sleep() {
     }
 }
 
-fn shutdown() {
-    let src = NSString::from_str(r#"tell application "System Events" to shut down"#);
+fn finder_events_osascript(action: &str) {
+    let src = NSString::from_str(&format!("tell application \"Finder\" to {}", action));
     let script = NSAppleScript::initWithSource(NSAppleScript::alloc(), &src).unwrap();
     let mut err = None;
     unsafe {
@@ -63,13 +103,7 @@ fn shutdown() {
 
 impl Actions for SystemAction {
     fn call_action(&self) {
-        match self {
-            Self::QuitSelf => {}
-
-            Self::Sleep => sleep(),
-
-            Self::Shutdown => shutdown(),
-        }
+        self.perform();
     }
 
     fn index_for_action(&self) -> RawIndex<'_> {
