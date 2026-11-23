@@ -25,7 +25,7 @@ impl App {
     }
 }
 
-pub(crate) trait Actions {
+pub trait Actions {
     fn call_action(&self);
 
     fn index_for_action(&self) -> RawIndex<'_>;

@@ -7,9 +7,9 @@ use objc2::rc::Retained;
 use objc2_app_kit::{NSWorkspace, NSWorkspaceOpenConfiguration};
 
 pub struct Engine<'a> {
-    pub queried_results: Vec<&'a dyn Actions>,
+    queried_results: Vec<&'a dyn Actions>,
     query: String,
-    pub actions: Vec<&'a dyn Actions>,
+    actions: Vec<&'a dyn Actions>,
     workspace: Retained<NSWorkspace>,
     aliases: HashMap<String, Vec<String>>,
     ranking: HashMap<String, i32>,
@@ -49,7 +49,7 @@ impl<'a> Engine<'a> {
         info!("Opening app")
     }
 
-    pub fn query_actions(&mut self, query: &str) {
+    pub fn query_actions(&mut self, query: &str) -> Vec<&'a dyn Actions> {
         info!("Querying actions");
         self.query = query.to_string();
         let query = query;
@@ -70,6 +70,7 @@ impl<'a> Engine<'a> {
         result_actions.sort_unstable_by_key(|x| (-x.1, x.0.index_for_action().name.len()));
 
         self.queried_results = result_actions.into_iter().map(|x| x.0).collect();
+        self.queried_results.clone()
     }
 
     pub fn open_action(&mut self, index: usize) -> Result<(), ()> {
