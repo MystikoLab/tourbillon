@@ -5,7 +5,7 @@ use objc2_app_kit::NSWorkspace;
 use objc2_foundation::NSURL;
 use std::path::PathBuf;
 
-use crate::index::Index;
+use crate::index::RawIndex;
 
 #[derive(Debug, Clone)]
 pub struct App {
@@ -14,7 +14,7 @@ pub struct App {
 }
 
 impl App {
-    pub fn index() -> Vec<Self> {
+    pub fn index_system_apps() -> Vec<Self> {
         info!("Indexing apps");
         crate::discovery::get_installed_apps()
     }
@@ -25,10 +25,10 @@ impl App {
     }
 }
 
-pub trait Actions {
+pub(crate) trait Actions {
     fn call_action(&self);
 
-    fn index_for_action(&self) -> Option<Index<'_>>;
+    fn index_for_action(&self) -> RawIndex<'_>;
 }
 
 impl Actions for App {
@@ -36,8 +36,8 @@ impl Actions for App {
         NSWorkspace::sharedWorkspace().openURL(&self.ns_url());
     }
 
-    fn index_for_action(&self) -> Option<Index<'_>> {
-        Some(Index { name: &self.name })
+    fn index_for_action(&self) -> RawIndex<'_> {
+        RawIndex { name: &self.name }
     }
 }
 
@@ -47,7 +47,9 @@ impl Actions for FendResult {
         todo!("Copy to clipboard functionality for actions for fend result")
     }
 
-    fn index_for_action(&self) -> Option<Index<'_>> {
-        None
+    fn index_for_action(&self) -> RawIndex<'_> {
+        RawIndex {
+            name: self.get_main_result(),
+        }
     }
 }

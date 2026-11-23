@@ -2,7 +2,7 @@ use objc2::{AnyThread, MainThreadMarker};
 use objc2_app_kit::NSApplication;
 use objc2_foundation::{NSAppleScript, NSString};
 
-use crate::{app::Actions, index::Index};
+use crate::{app::Actions, index::RawIndex};
 
 pub enum SystemAction {
     QuitSelf,
@@ -72,7 +72,7 @@ impl Actions for SystemAction {
         }
     }
 
-    fn index_for_action(&self) -> Option<Index<'_>> {
-        Some(Index { name: self.name() })
+    fn index_for_action(&self) -> RawIndex<'_> {
+        RawIndex { name: self.name() }
     }
 }
