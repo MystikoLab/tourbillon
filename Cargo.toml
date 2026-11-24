@@ -16,3 +16,4 @@ objc2-core-foundation = "0.3.2"
 objc2-core-graphics = { version = "0.3.2", features = ["CGColor"] }
 objc2-foundation = "0.3.2"
 objc2-quartz-core = { version = "0.3.2", features = ["CALayer", "objc2-core-graphics"] }
+thiserror = "2.0.21"
