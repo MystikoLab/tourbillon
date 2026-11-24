@@ -19,28 +19,7 @@ As of now, this engine supports:
 - Searching through the apps / actions.
 - Perform maths and unit conversion (using the engine behind [fend](https://github.com/printfn/fend))
 
-Take a look at main.rs:
-```rs
-fn main() {
-    let apps = App::index(); // access the apps index. useful for getting the apps paths to load their images
-    let system_actions = SystemAction::index(); // system actions like sleeping, shutdown, and quitting the app itself
-
-    let actions = apps
-        .iter()
-        .map(|x| x as &dyn Actions)
-        .chain(system_actions.iter().map(|x| x as &dyn Actions))
-        .collect();
-
-    let engine = Engine::new(actions);
-    let result = engine.query("a");
-
-    for i in result {
-        dbg!(i.index_for_action());
-    }
-
-    let math_result = engine.get_math_result("log(10 * 10)"); 
-}
-```
+Take a look at main.rs. That's the current "docs".
 
 > Quick rundown:
 you define what the user should be able to search through by creating an engine, which holds a reference to anything that implements `Actions`.
