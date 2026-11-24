@@ -11,21 +11,20 @@ A: There are so many different launchers, and all of them have their own disadva
 
 ---
 
-## How to use this?
+## Features
 
 As of now, this engine supports:
-- 3 system actions
-- App searching (indexed via the LaunchServices Private API)
+- A few system actions
+- searching installed apps (indexed via the LaunchServices Private API)
 - Searching through the apps / actions.
 - Perform maths and unit conversion (using the engine behind [fend](https://github.com/printfn/fend))
-
-Take a look at main.rs. That's the current "docs".
-
-> Quick rundown:
-you define what the user should be able to search through by creating an engine, which holds a reference to anything that implements `Actions`.
-This allows you to build your own custom actions and add the relevant code for it, and query it with the same ranking and aliases support (yet to be added) easily. 
+- Automatically add clipboard history items (files, images, urls, text and color)
+- Automated ranking when using the `.open_action` method on the engine.
+- Support for aliases and subaliases in the index.
 
 This handles most of the "low level" macOS APIs without putting too much stress on the user.
+
+
 
 ## AI Usage:
 - No AI used in writing this code,to achieve a neutral stance to let both Vibe coders and Anti AI coders use it.
