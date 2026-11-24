@@ -1,6 +1,14 @@
-use std::collections::HashMap;
+use std::{
+    collections::HashMap,
+    sync::{Arc, Mutex},
+    thread::{self, JoinHandle},
+    time::Duration,
+};
 
-use crate::app::{Actions, App};
+use crate::{
+    app::{Actions, App},
+    pasteboard::PasteboardItem,
+};
 use fend_core::Context;
 use log::info;
 use objc2::rc::Retained;
@@ -13,6 +21,8 @@ pub struct Engine<'a> {
     workspace: Retained<NSWorkspace>,
     aliases: HashMap<String, Vec<String>>,
     ranking: HashMap<String, i32>,
+    pub clipboard_history_items: Arc<Mutex<Vec<PasteboardItem>>>,
+    background_tasks: Vec<JoinHandle<()>>,
 }
 
 impl<'a> Engine<'a> {
@@ -26,7 +36,29 @@ impl<'a> Engine<'a> {
             workspace: NSWorkspace::sharedWorkspace(),
             aliases: HashMap::new(),
             ranking: HashMap::new(),
+            clipboard_history_items: Arc::new(Mutex::new(Vec::new())),
+            background_tasks: Vec::new(),
         }
+    }
+
+    pub fn start_clipboard_bg_task(&mut self) {
+        let cb_hist = self.clipboard_history_items.clone();
+
+        self.background_tasks.push(thread::spawn(move || {
+            loop {
+                thread::sleep(Duration::from_millis(100));
+                let current_item = PasteboardItem::get_current_pasteboard_item();
+                let Ok(mut cb_hist) = cb_hist.try_lock() else {
+                    continue;
+                };
+
+                if cb_hist.last().map(|x| x.clone()) != current_item
+                    && let Some(has_item) = current_item
+                {
+                    cb_hist.push(has_item);
+                }
+            }
+        }));
     }
 
     pub fn load_aliases_and_ranking(

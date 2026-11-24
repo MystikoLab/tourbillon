@@ -1,3 +1,6 @@
+use std::thread;
+use std::time::Duration;
+
 use dotenvy::dotenv;
 
 use crate::engine::Engine;
@@ -27,13 +30,14 @@ fn main() {
         .collect();
 
     let mut engine = Engine::new(actions);
-    let actions: Vec<&str> = engine
-        .query_actions("emptytrash")
-        .iter()
-        .map(|x| x.index_for_action().name)
-        .collect();
 
-    engine.open_action(0);
+    engine.start_clipboard_bg_task();
+    println!("Started clipboard bg task");
 
-    dbg!(actions);
+    thread::sleep(Duration::from_secs(2));
+
+    dbg!(&engine.clipboard_history_items);
+    thread::sleep(Duration::from_secs(2));
+
+    dbg!(&engine.clipboard_history_items);
 }
