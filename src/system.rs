@@ -14,6 +14,7 @@ pub enum SystemAction {
     Logout,
     EmptyTrash,
     EjectAllDisks,
+    SleepAllDisplays,
 }
 
 impl SystemAction {
@@ -26,6 +27,7 @@ impl SystemAction {
             SystemAction::Logout => logout(),
             SystemAction::EmptyTrash => empty_trash(),
             SystemAction::EjectAllDisks => eject_all_disks(),
+            SystemAction::SleepAllDisplays => sleep_all_displays(),
         }
     }
 
@@ -38,6 +40,7 @@ impl SystemAction {
             SystemAction::Logout => "logout",
             SystemAction::EmptyTrash => "emptytrash",
             SystemAction::EjectAllDisks => "ejectalldisks",
+            SystemAction::SleepAllDisplays => "sleepalldisplays",
         }
     }
     pub fn index() -> Vec<SystemAction> {
@@ -49,8 +52,13 @@ impl SystemAction {
             SystemAction::Logout,
             SystemAction::EmptyTrash,
             SystemAction::EjectAllDisks,
+            SystemAction::SleepAllDisplays,
         ]
     }
+}
+
+fn sleep_all_displays() {
+    std::process::Command::new("pmset").arg("displaysleepnow");
 }
 
 fn quit_self() {
