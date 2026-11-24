@@ -1,6 +1,3 @@
-use std::thread;
-use std::time::Duration;
-
 use dotenvy::dotenv;
 
 use crate::engine::Engine;
@@ -22,7 +19,9 @@ fn main() {
     env_logger::init();
 
     let apps = App::index_system_apps();
+    dbg!(apps.len());
     let system_actions = SystemAction::index();
+    dbg!(system_actions.len());
 
     let actions = apps
         .iter()
@@ -32,13 +31,5 @@ fn main() {
 
     let mut engine = Engine::new(actions);
 
-    engine.start_clipboard_bg_task();
-    println!("Started clipboard bg task");
-
-    thread::sleep(Duration::from_secs(2));
-
-    dbg!(&engine.clipboard_history_items);
-    thread::sleep(Duration::from_secs(2));
-
-    dbg!(&engine.clipboard_history_items);
+    engine.query_actions("s").len();
 }

@@ -57,7 +57,7 @@ impl<'a> WeightedIndex<'a> {
         if comparison < query.len() as i32 {
             0
         } else {
-            (comparison + self.ranking) / 2
+            ((comparison + self.ranking) / 2) + 1
         }
     }
 }
