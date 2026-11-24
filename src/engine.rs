@@ -126,3 +126,21 @@ impl<'a> Engine<'a> {
             .map(|x| x.get_main_result().to_string())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::system::SystemAction;
+
+    use super::*;
+    #[test]
+    fn system_actions_engine_test() {
+        let acts = SystemAction::index();
+        let mut eng = Engine::new(acts.iter().map(|x| x as _).collect());
+
+        assert_eq!(eng.query_actions("quit").len(), 1);
+        assert_eq!(eng.query_actions("slep").len(), 2);
+        assert_eq!(eng.query_actions("sleep").len(), 2);
+        assert_eq!(eng.query_actions("all").len(), 2);
+        assert_eq!(eng.query_actions("s").len(), 6);
+    }
+}

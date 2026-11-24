@@ -83,3 +83,39 @@ fn compare(query: &str, content: &str) -> i32 {
 
     chars_in_query_found
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn test_comparison() {
+        assert_eq!(compare("aari", "safari"), 4);
+        assert_eq!(compare("aari", "mail"), 1);
+
+        assert_eq!(compare("sys", "sytem"), 2);
+        assert_eq!(compare("sac", "s"), 1);
+    }
+
+    #[test]
+    fn test_rank_against_query() {
+        let mut index = WeightedIndex {
+            aliases: &[],
+            default_aliases: &[],
+            ranking: 4,
+            name: "Safari",
+        };
+
+        assert_eq!(index.rank_against_query("aari"), 5);
+
+        index.ranking = 2;
+
+        assert_eq!(index.rank_against_query("aari"), 4);
+
+        let aliases = [String::from("browser")];
+        index.aliases = &aliases;
+        assert_eq!(index.rank_against_query("bower"), 4);
+
+        index.ranking = 0;
+        assert_eq!(index.rank_against_query("bower"), 3);
+    }
+}

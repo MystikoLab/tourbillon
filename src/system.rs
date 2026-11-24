@@ -138,3 +138,50 @@ impl Actions for SystemAction {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_subnames() {
+        let system_actions = SystemAction::index();
+
+        for action in system_actions {
+            match action {
+                SystemAction::QuitSelf => {
+                    assert_eq!(action.subnames().len(), 2);
+                    assert_eq!(action.name(), "quit");
+                }
+                SystemAction::Sleep => {
+                    assert_eq!(action.subnames().len(), 2);
+                    assert_eq!(action.name(), "sleep");
+                }
+                SystemAction::Shutdown => {
+                    assert_eq!(action.subnames().len(), 5);
+                    assert_eq!(action.name(), "shutdown");
+                }
+                SystemAction::Restart => {
+                    assert_eq!(action.subnames().len(), 5);
+                    assert_eq!(action.name(), "restart");
+                }
+                SystemAction::Logout => {
+                    assert_eq!(action.subnames().len(), 3);
+                    assert_eq!(action.name(), "logout");
+                }
+                SystemAction::EmptyTrash => {
+                    assert_eq!(action.subnames().len(), 3);
+                    assert_eq!(action.name(), "emptytrash");
+                }
+                SystemAction::EjectAllDisks => {
+                    assert_eq!(action.subnames().len(), 5);
+                    assert_eq!(action.name(), "ejectalldisks");
+                }
+                SystemAction::SleepAllDisplays => {
+                    assert_eq!(action.subnames().len(), 4);
+                    assert_eq!(action.name(), "sleepalldisplays");
+                }
+            }
+        }
+    }
+}
