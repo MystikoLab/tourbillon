@@ -25,7 +25,7 @@ impl<'a> RawIndex<'a> {
 
         let aliases = alias_config.get(&name).map_or_default(Vec::as_slice);
 
-        let ranking = rank_index.get(&name).map(|x| *x).unwrap_or(0);
+        let ranking = rank_index.get(&name).copied().unwrap_or(0);
 
         WeightedIndex {
             ranking,
@@ -38,7 +38,7 @@ impl<'a> RawIndex<'a> {
 
 impl<'a> WeightedIndex<'a> {
     pub fn rank_against_query(&self, query: &str) -> i32 {
-        let mut comparison = compare(query, &self.name);
+        let mut comparison = compare(query, self.name);
 
         for alias in self.default_aliases {
             let new_comparison = compare(query, alias);

@@ -7,6 +7,7 @@ use std::{
 
 use crate::{
     app::{Actions, App},
+    error::ActionError,
     pasteboard::PasteboardItem,
 };
 use fend_core::Context;
@@ -52,7 +53,7 @@ impl<'a> Engine<'a> {
                     continue;
                 };
 
-                if cb_hist.last().map(|x| x.clone()) != current_item
+                if cb_hist.last().cloned() != current_item
                     && let Some(has_item) = current_item
                 {
                     cb_hist.push(has_item);
@@ -84,7 +85,6 @@ impl<'a> Engine<'a> {
     pub fn query_actions(&mut self, query: &str) -> Vec<&'a dyn Actions> {
         info!("Querying actions");
         self.query = query.to_string();
-        let query = query;
         let mut result_actions = self
             .actions
             .iter()
@@ -105,8 +105,11 @@ impl<'a> Engine<'a> {
         self.queried_results.clone()
     }
 
-    pub fn open_action(&mut self, index: usize) -> Result<(), ()> {
-        let action = self.queried_results.get(index).ok_or(())?;
+    pub fn open_action(&mut self, index: usize) -> Result<(), ActionError> {
+        let action = self
+            .queried_results
+            .get(index)
+            .ok_or(ActionError::CouldNotFindAction)?;
         action.call_action();
         self.ranking
             .entry(action.index_for_action().name.to_lowercase())

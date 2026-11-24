@@ -41,11 +41,7 @@ impl PasteboardItem {
             Some(PasteboardItem::Urls(url))
         } else if let Some(image) = Self::read_image() {
             Some(PasteboardItem::Image(image))
-        } else if let Some(text) = Self::read_string() {
-            Some(PasteboardItem::Text(text))
-        } else {
-            None
-        }
+        } else { Self::read_string().map(PasteboardItem::Text) }
     }
 
     pub fn write_to_clipboard(&self) {

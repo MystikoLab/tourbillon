@@ -262,7 +262,7 @@ fn query_app(url: impl AsRef<NSURL>) -> Option<App> {
 
     let name = select_app_name(&path, &metadata)?;
 
-    Some(App { name, path: path })
+    Some(App { name, path })
 }
 
 /// Returns all installed applications discovered via Launch Services.
@@ -283,7 +283,7 @@ pub fn get_installed_apps() -> Vec<App> {
     // Intermediate allocation into a vec allows us to parallelize the iteration, speeding up discovery by ~5x.
     let urls: Vec<_> = registered_app_urls.into_iter().collect();
 
-    urls.into_iter().filter_map(|url| query_app(url)).collect()
+    urls.into_iter().filter_map(query_app).collect()
 }
 
 fn is_nested_inside_another_app(app_path: &Path) -> bool {
@@ -324,7 +324,7 @@ pub fn default_app_paths() -> [String; 4] {
 pub(crate) fn fallback_get_installed_apps() -> Vec<App> {
     default_app_paths()
         .into_iter()
-        .flat_map(|path| discover_apps(path))
+        .flat_map(discover_apps)
         .collect()
 }
 
@@ -372,8 +372,8 @@ fn discover_apps(dir: impl AsRef<Path>) -> Vec<App> {
 
             let name = file_name.strip_suffix(".app").unwrap().to_string();
             Some(App {
-                name: name,
-                path: path,
+                name,
+                path,
             })
         })
         .collect()
