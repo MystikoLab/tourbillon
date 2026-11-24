@@ -32,7 +32,7 @@ impl<'a> Engine<'a> {
         Engine {
             actions,
             queried_results: Vec::new(),
-            query: "".to_string(),
+            query: String::new(),
             workspace: NSWorkspace::sharedWorkspace(),
             aliases: HashMap::new(),
             ranking: HashMap::new(),
@@ -117,6 +117,7 @@ impl<'a> Engine<'a> {
     }
 
     pub fn get_math_result(&self, query: &str) -> Option<String> {
+        info!("Querying for math result");
         fend_core::evaluate(query, &mut Context::new())
             .ok()
             .map(|x| x.get_main_result().to_string())

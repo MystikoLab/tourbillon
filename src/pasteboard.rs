@@ -1,11 +1,16 @@
 use std::path::PathBuf;
 
-use objc2::{ClassType, rc::Retained, runtime::AnyClass};
-use objc2_app_kit::{
-    NSBitmapImageFileType, NSBitmapImageRep, NSColor, NSColorSpace, NSPasteboard,
-    NSPasteboardTypePNG, NSPasteboardTypeTIFF, NSPasteboardURLReadingFileURLsOnlyKey,
+use objc2::{
+    ClassType,
+    rc::Retained,
+    runtime::{AnyClass, ProtocolObject},
 };
-use objc2_foundation::{NSArray, NSDictionary, NSNumber, NSString, NSURL};
+use objc2_app_kit::{
+    NSBitmapImageFileType, NSBitmapImageRep, NSColor, NSColorSpace, NSPasteboard, NSPasteboardItem,
+    NSPasteboardTypePNG, NSPasteboardTypeTIFF, NSPasteboardURLReadingFileURLsOnlyKey,
+    NSPasteboardWriting,
+};
+use objc2_foundation::{NSArray, NSData, NSDictionary, NSNumber, NSString, NSURL};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Rgba {
@@ -41,6 +46,35 @@ impl PasteboardItem {
         } else {
             None
         }
+    }
+
+    pub fn write_to_clipboard(&self) {
+        let pasteboard = NSPasteboard::generalPasteboard();
+        pasteboard.clearContents();
+
+        let arr: Vec<Retained<ProtocolObject<dyn NSPasteboardWriting>>> = match self {
+            PasteboardItem::Files(files) => files
+                .iter()
+                .filter_map(|path| NSURL::from_path(path, path.is_dir(), None))
+                .map(ProtocolObject::from_retained)
+                .collect(),
+            PasteboardItem::Text(str) | PasteboardItem::Urls(str) => {
+                vec![ProtocolObject::from_retained(NSString::from_str(str))]
+            }
+            PasteboardItem::Colour(clr) => {
+                vec![ProtocolObject::from_retained(
+                    NSColor::colorWithRed_green_blue_alpha(clr.r, clr.g, clr.b, clr.a),
+                )]
+            }
+            PasteboardItem::Image(bytes) => {
+                let item = NSPasteboardItem::new();
+                let data = NSData::with_bytes(bytes.as_slice());
+                unsafe { item.setData_forType(&data, NSPasteboardTypePNG) };
+                vec![ProtocolObject::from_retained(item)]
+            }
+        };
+
+        pasteboard.writeObjects(&NSArray::from_retained_slice(&arr));
     }
 
     fn read_string() -> Option<String> {

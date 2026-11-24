@@ -5,7 +5,7 @@ use objc2_app_kit::NSWorkspace;
 use objc2_foundation::NSURL;
 use std::path::PathBuf;
 
-use crate::index::RawIndex;
+use crate::{index::RawIndex, pasteboard::PasteboardItem};
 
 #[derive(Debug, Clone)]
 pub struct App {
@@ -43,8 +43,7 @@ impl Actions for App {
 
 impl Actions for FendResult {
     fn call_action(&self) {
-        println!("{}", self.get_main_result());
-        todo!("Copy to clipboard functionality for actions for fend result")
+        PasteboardItem::Text(self.get_main_result().to_string()).write_to_clipboard();
     }
 
     fn index_for_action(&self) -> RawIndex<'_> {
