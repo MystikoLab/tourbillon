@@ -31,6 +31,21 @@ impl SystemAction {
         }
     }
 
+    pub fn subnames(&self) -> &[&str] {
+        match self {
+            SystemAction::QuitSelf => &["quit", "exit"],
+            SystemAction::Sleep => &["sleep", "slep"],
+            SystemAction::Shutdown => &["shut", "down", "off", "turn", "shut down"],
+            SystemAction::Restart => &["reboot", "off", "on", "re start", "re boot"],
+            SystemAction::Logout => &["log", "out", "log out"],
+            SystemAction::EmptyTrash => &["empty", "trash", "empty trash"],
+            SystemAction::EjectAllDisks => &["eject", "all", "disks", "disk", "eject all disks"],
+            SystemAction::SleepAllDisplays => {
+                &["sleep all displays", "sleep", "displays", "all displays"]
+            }
+        }
+    }
+
     pub fn name(&self) -> &str {
         match self {
             SystemAction::QuitSelf => "quit",
@@ -117,6 +132,9 @@ impl Actions for SystemAction {
     }
 
     fn index_for_action(&self) -> RawIndex<'_> {
-        RawIndex { name: self.name() }
+        RawIndex {
+            name: self.name(),
+            alternate_names: self.subnames(),
+        }
     }
 }

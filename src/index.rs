@@ -4,6 +4,7 @@ use std::collections::HashMap;
 #[derive(Debug)]
 pub struct RawIndex<'a> {
     pub name: &'a str,
+    pub alternate_names: &'a [&'a str],
 }
 
 #[derive(Debug, Clone)]
@@ -11,6 +12,7 @@ pub struct WeightedIndex<'a> {
     pub ranking: i32,
     pub name: &'a str,
     pub aliases: &'a [String],
+    pub default_aliases: &'a [&'a str],
 }
 
 impl<'a> RawIndex<'a> {
@@ -29,6 +31,7 @@ impl<'a> RawIndex<'a> {
             ranking,
             name: self.name,
             aliases,
+            default_aliases: self.alternate_names,
         }
     }
 }
@@ -36,6 +39,13 @@ impl<'a> RawIndex<'a> {
 impl<'a> WeightedIndex<'a> {
     pub fn rank_against_query(&self, query: &str) -> i32 {
         let mut comparison = compare(query, &self.name);
+
+        for alias in self.default_aliases {
+            let new_comparison = compare(query, alias);
+            if new_comparison > comparison {
+                comparison = new_comparison
+            }
+        }
 
         for alias in self.aliases {
             let new_comparison = compare(query, alias);

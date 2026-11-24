@@ -37,7 +37,10 @@ impl Actions for App {
     }
 
     fn index_for_action(&self) -> RawIndex<'_> {
-        RawIndex { name: &self.name }
+        RawIndex {
+            name: &self.name,
+            alternate_names: &[],
+        }
     }
 }
 
@@ -49,6 +52,7 @@ impl Actions for FendResult {
     fn index_for_action(&self) -> RawIndex<'_> {
         RawIndex {
             name: self.get_main_result(),
+            alternate_names: &[],
         }
     }
 }
