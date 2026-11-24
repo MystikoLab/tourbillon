@@ -70,7 +70,7 @@ fn compare(query: &str, content: &str) -> i32 {
     let mut chars_in_query_found = 0;
     let mut current_index = 0;
 
-    for current_letter in content.chars() {
+    for current_letter in content.to_lowercase().chars() {
         if Some(&current_letter) == query_chars.get(current_index) {
             current_index += 1;
             chars_in_query_found += 1;
