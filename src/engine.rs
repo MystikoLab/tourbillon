@@ -42,6 +42,10 @@ impl<'a> Engine<'a> {
         }
     }
 
+    pub fn set_actions(&mut self, actions: Vec<&'a dyn Actions>) {
+        self.actions = actions;
+    }
+
     pub fn start_clipboard_bg_task(&mut self) {
         let cb_hist = self.clipboard_history_items.clone();
 
